@@ -17,7 +17,7 @@ function SignInContent() {
 
   const handleSignIn = async () => {
     setIsLoading(true);
-    await signIn("google");
+    await signIn("google", { callbackUrl: "/pitching" });
   };
 
   return (
