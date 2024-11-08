@@ -13,7 +13,10 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   callbacks: {
-    async signIn({}) {
+    redirect: ({ url, baseUrl }) => {
+      return `${baseUrl}/pitching`;
+    },
+    async signIn({ user }) {
       return true;
     },
     async session({ session, user }) {

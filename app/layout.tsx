@@ -12,6 +12,10 @@ export const metadata: Metadata = {
     default: "Pitch Enhancer - Train your pitching capabilities with AI!",
   },
   description: "Pitch Enhancer - Train your pitching capabilities with AI!",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+  },
 };
 
 export default function RootLayout({
