@@ -193,7 +193,7 @@ const Home: React.FC = () => {
       }
 
       const data = await response.json();
-      setPresentationTips(data.choices[0].message.content);
+      setPresentationTips(data);
     } catch (error) {
       console.error("Error getting presentation tips:", error);
       alert("There was an error getting presentation tips.");

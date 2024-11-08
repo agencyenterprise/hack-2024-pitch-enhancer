@@ -1,12 +1,20 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { Suspense, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { Suspense, useState, useEffect } from "react";
+import { redirect } from "next/navigation";
 
 // Create a separate component for the sign-in content
 function SignInContent() {
+  const { status } = useSession();
   const callbackUrl = `${process.env.NEXT_PUBLIC_URL}/pitching` || "/pitching";
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      redirect("/pitching");
+    }
+  }, [status]);
 
   const handleSignIn = async () => {
     setIsLoading(true);

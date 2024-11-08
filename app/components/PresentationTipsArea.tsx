@@ -12,7 +12,7 @@ export default function PresentationTipsArea({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-white">Presentation Tips</h2>
       </div>
-      <p className="text-white">{tips}</p>
+      <div dangerouslySetInnerHTML={{ __html: tips }} />
     </div>
   );
 }
