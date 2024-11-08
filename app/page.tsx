@@ -43,6 +43,7 @@ const Home: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>(View.Transcription);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const [isProcessingTips, setIsProcessingTips] = useState<boolean>(false);
 
   useEffect(() => {
     if (!audioBlob) return;
@@ -167,6 +168,7 @@ const Home: React.FC = () => {
   };
 
   const getPresentationTips = async (transcribedText: string) => {
+    setIsProcessingTips(true);
     const formData = new FormData();
     formData.append("transcription", transcribedText);
     formData.append("type", "tips");
@@ -186,6 +188,8 @@ const Home: React.FC = () => {
     } catch (error) {
       console.error("Error getting presentation tips:", error);
       alert("There was an error getting presentation tips.");
+    } finally {
+      setIsProcessingTips(false);
     }
   };
 
@@ -258,7 +262,15 @@ const Home: React.FC = () => {
             {currentView === "transcription" ? (
               <TranscriptionArea transcription={transcription || ""} />
             ) : currentView === View.Tips ? (
-              <PresentationTipsArea tips={presentationTips || ""} />
+              <div className="flex-1">
+                {isProcessingTips ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-300"></div>
+                  </div>
+                ) : (
+                  <PresentationTipsArea tips={presentationTips || ""} />
+                )}
+              </div>
             ) : (
               <WordCountArea wordCount={wordCount || []} />
             )}
