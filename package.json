@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "ci": "npm ci --force",
     "dev": "next dev",
-    "build": "npm ci --force && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:studio": "prisma studio",
