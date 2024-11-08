@@ -216,8 +216,8 @@ const Home: React.FC = () => {
         <h1 className="flex items-center gap-3 px-6 py-3 rounded-full bg-gray-500/50 border border-gray-200">
           <MicrophoneIcon className="h-8 w-8 text-red-300" />
           <p>
-            <span className="font-bold text-white text-2xl">Present</span>{" "}
-            <span className="font-thin text-red-300 text-2xl">Better</span>
+            <span className="font-bold text-white text-2xl">Pitch</span>{" "}
+            <span className="font-thin text-red-300 text-2xl">Enchancer</span>
           </p>
         </h1>
 
