@@ -1,289 +1,115 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import tealEllipse from "../images/ellipse-3.png";
 import pinkEllipse from "../images/ellipse-4.png";
-import {
-  MicrophoneIcon,
-  StopIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/24/solid";
-
-import "./globals.css";
-import TranscriptionArea from "./components/TranscriptionArea";
-import PresentationTipsArea from "./components/PresentationTipsArea";
-import { countWords } from "./utils/countWords";
-import WordCountArea from "./components/WordCountArea";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import ProcessingSpinner from "./components/ProcessingSpinner";
-
-enum View {
-  Transcription = "transcription",
-  Tips = "tips",
-  WordCount = "wordCount",
-}
-
-const views = [View.Transcription, View.Tips, View.WordCount];
+import { MicrophoneIcon } from "@heroicons/react/24/solid";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 const Home: React.FC = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [audioBlob, setAudioBlob] = useState<Blob>();
-  const [transcription, setTranscription] = useState<string | null>(null);
-  const [presentationTips, setPresentationTips] = useState<string | null>(null);
-  const [wordCount, setWordCount] = useState<Array<{
-    word: string;
-    count: number;
-  }> | null>(null);
-  const [currentView, setCurrentView] = useState<View>(View.Transcription);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const [isProcessingTips, setIsProcessingTips] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!audioBlob) return;
-    transcribeAudio(audioBlob);
-  }, [audioBlob]);
-
-  useEffect(() => {
-    if (!transcription) return;
-    setWordCount(countWords(transcription));
-    getPresentationTips(transcription);
-  }, [transcription]);
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/signin");
-    }
-  }, [status, router]);
-
-  // Show loading state while checking authentication
-  if (status === "loading") {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  // Only render the main content if authenticated
-  if (!session) {
-    return null;
-  }
-  const requestMicrophonePermission = async (): Promise<boolean> => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
-      return true;
-    } catch (error) {
-      console.error("Microphone access denied:", error);
-      alert("Please enable microphone access in your browser settings.");
-      return false;
-    }
-  };
-
-  const startRecording = async () => {
-    const hasMicrophonePermission = await requestMicrophonePermission();
-    if (!hasMicrophonePermission) {
-      setIsRecording(false);
-      return;
-    }
-
-    setIsRecording(true);
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-
-      mediaRecorderRef.current.ondataavailable = (event: BlobEvent) => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      mediaRecorderRef.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/wav",
-        });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        setAudioUrl(audioUrl);
-        setAudioBlob(audioBlob);
-      };
-
-      mediaRecorderRef.current.start();
-    } catch (error) {
-      console.error("Error starting recording:", error);
-      setIsRecording(false);
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  const playAudio = () => {
-    if (audioUrl) {
-      const audio = new Audio(audioUrl);
-      audio.play();
-    }
-  };
-
-  const clearRecording = () => {
-    setAudioUrl(null);
-    setTranscription(null);
-    setPresentationTips(null);
-    audioChunksRef.current = [];
-  };
-
-  const transcribeAudio = async (audioBlob: Blob) => {
-    const formData = new FormData();
-    const audioFile = new File([audioBlob], "audio.wav", { type: "audio/wav" });
-    formData.append("file", audioFile);
-    formData.append("model", "whisper-1");
-    formData.append("type", "transcribe");
-
-    try {
-      const response = await fetch("/api/openai", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setTranscription(data.text);
-    } catch (error) {
-      console.error("Error transcribing audio:", error);
-      alert("There was an error transcribing the audio.");
-    }
-  };
-
-  const getPresentationTips = async (transcribedText: string) => {
-    setIsProcessingTips(true);
-    const formData = new FormData();
-    formData.append("transcription", transcribedText);
-    formData.append("type", "tips");
-
-    try {
-      const response = await fetch("/api/openai", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setPresentationTips(data.choices[0].message.content);
-    } catch (error) {
-      console.error("Error getting presentation tips:", error);
-      alert("There was an error getting presentation tips.");
-    } finally {
-      setIsProcessingTips(false);
-    }
-  };
-
-  const handleNextView = () => {
-    const nextIndex = (views.indexOf(currentView) + 1) % views.length;
-    setCurrentView(views[nextIndex]);
-  };
-
-  const handlePreviousView = () => {
-    const previousIndex =
-      (views.indexOf(currentView) - 1 + views.length) % views.length;
-    setCurrentView(views[previousIndex]);
-  };
-
   return (
-    <div>
+    <div className="relative min-h-screen">
       <Image
         src={tealEllipse}
         alt="teal gradient, background decoration"
-        className="absolute left-0 top-0 -z-10"
+        className="absolute left-0 top-0 -z-10 opacity-60"
       />
       <Image
         src={pinkEllipse}
         alt="pink gradient, background decoration"
-        className="absolute right-0 top-[20%] -z-10"
+        className="absolute right-0 top-[20%] -z-10 opacity-60"
       />
-      <div className="flex flex-col items-center min-h-screen mt-20 px-4">
-        <h1 className="flex items-center gap-3 px-6 py-3 rounded-full bg-gray-500/50 border border-gray-200">
-          <MicrophoneIcon className="h-8 w-8 text-red-300" />
-          <p>
-            <span className="font-bold text-white text-2xl">Pitch</span>{" "}
-            <span className="font-thin text-red-300 text-2xl">Enchancer</span>
-          </p>
-        </h1>
 
-        <h2 className="text-white text-2xl mt-24 font-bold">
-          Record your presentation and <br />
-          get tips on how to improve it!
-        </h2>
-
-        <button
-          onClick={isRecording ? stopRecording : startRecording}
-          className="p-16 bg-red-400 rounded-full hover:bg-red-600 transition-colors mt-16 relative"
+      {/* Hero Section */}
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center space-y-8 max-w-4xl"
         >
-          <div className="absolute inset-0 -m-2 rounded-full bg-gray-500/30 animate-pulse"></div>
-          {isRecording ? (
-            <StopIcon className="h-8 w-8 text-white" />
-          ) : (
-            <MicrophoneIcon className="h-8 w-8 text-white" />
-          )}
-        </button>
-        {audioUrl && (
-          <>
-            <button onClick={playAudio} disabled={isRecording}>
-              Play Audio
-            </button>
-            <button onClick={clearRecording}>Clear Recording</button>
-            <audio src={audioUrl} controls />
-          </>
-        )}
-        {transcription && (
-          <div className="w-full max-w-2xl mt-8 flex items-center gap-4">
-            <button
-              onClick={handlePreviousView}
-              className="p-2 bg-gray-500/30 rounded-full text-red-300 hover:text-red-400"
-            >
-              <ChevronLeftIcon className="h-6 w-6" />
-            </button>
+          <h1 className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gray-500/30 border border-gray-200/30 backdrop-blur-sm mx-auto">
+            <MicrophoneIcon className="h-8 w-8 text-red-300" />
+            <p>
+              <span className="font-bold text-white text-3xl">Pitch</span>{" "}
+              <span className="font-thin text-red-300 text-3xl">Enhancer</span>
+            </p>
+          </h1>
 
-            {currentView === "transcription" ? (
-              <TranscriptionArea transcription={transcription || ""} />
-            ) : currentView === View.Tips ? (
-              <div className="flex-1">
-                {isProcessingTips ? (
-                  <div className="flex items-center justify-center h-full">
-                    <ProcessingSpinner />
-                  </div>
-                ) : (
-                  <PresentationTipsArea tips={presentationTips || ""} />
-                )}
-              </div>
-            ) : (
-              <WordCountArea wordCount={wordCount || []} />
-            )}
+          <h2 className="text-white text-5xl font-bold leading-relaxed">
+            Turn Your
+            <span className="text-red-300"> Brilliant Ideas </span>
+            into Confident Pitches
+          </h2>
 
-            <button
-              onClick={handleNextView}
-              className="p-2 bg-gray-500/30 rounded-full text-red-300 hover:text-red-400"
+          <p className="text-gray-300 text-xl max-w-2xl mx-auto leading-relaxed">
+            Created specifically for shy developers who have amazing ideas but
+            struggle with presenting them. Let AI help you craft and practice
+            the perfect pitch.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="p-6 bg-gray-500/10 backdrop-blur-sm rounded-2xl border border-gray-200/10"
             >
-              <ChevronRightIcon className="h-6 w-6" />
-            </button>
+              <h3 className="text-red-300 text-xl font-bold mb-3">
+                Record & Practice
+              </h3>
+              <p className="text-gray-300">
+                Practice your pitch privately and get instant feedback on your
+                delivery
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="p-6 bg-gray-500/10 backdrop-blur-sm rounded-2xl border border-gray-200/10"
+            >
+              <h3 className="text-red-300 text-xl font-bold mb-3">
+                AI Analysis
+              </h3>
+              <p className="text-gray-300">
+                Get personalized tips on improving your pitch structure and
+                delivery style
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="p-6 bg-gray-500/10 backdrop-blur-sm rounded-2xl border border-gray-200/10"
+            >
+              <h3 className="text-red-300 text-xl font-bold mb-3">
+                Build Confidence
+              </h3>
+              <p className="text-gray-300">
+                Transform from shy developer to confident presenter at your own
+                pace
+              </p>
+            </motion.div>
           </div>
-        )}
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <Link
+              href="/pitching"
+              className="px-8 py-4 bg-red-400/80 rounded-full text-white hover:bg-red-600 transition-all text-lg font-semibold hover:scale-105"
+            >
+              Become a Master Pitcher!
+            </Link>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );
