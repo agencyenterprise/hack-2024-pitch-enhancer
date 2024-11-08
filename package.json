@@ -5,7 +5,7 @@
   "scripts": {
     "ci": "npm ci --force",
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm ci --force && next build",
     "start": "next start",
     "lint": "next lint",
     "db:studio": "prisma studio",
