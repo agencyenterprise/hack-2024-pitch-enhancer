@@ -40,4 +40,6 @@ next-env.d.ts
 
 # postgres data
 /postgres-data
-/local_database%   
+# development
+/local_database
+/local_database/*
