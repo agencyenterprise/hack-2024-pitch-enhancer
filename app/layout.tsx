@@ -8,12 +8,10 @@ import { AuthProvider } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s - Speech Meter",
-    default:
-      "Speech Meter - Analyze your accent and improve your pronunciation",
+    template: "%s - Pitch Enhancer",
+    default: "Pitch Enhancer - Train your pitching capabilities with AI!",
   },
-  description:
-    "Speech Meter - Analyze your accent and improve your pronunciation",
+  description: "Pitch Enhancer - Train your pitching capabilities with AI!",
 };
 
 export default function RootLayout({
