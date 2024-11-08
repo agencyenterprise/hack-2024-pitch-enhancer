@@ -1,13 +1,11 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 // Create a separate component for the sign-in content
 function SignInContent() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/pitching";
+  const callbackUrl = "/pitching";
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignIn = async () => {
