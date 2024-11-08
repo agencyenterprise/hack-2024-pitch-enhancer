@@ -7,7 +7,6 @@ import { redirect } from "next/navigation";
 // Create a separate component for the sign-in content
 function SignInContent() {
   const { status } = useSession();
-  const callbackUrl = `${process.env.NEXT_PUBLIC_URL}/pitching` || "/pitching";
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -18,7 +17,7 @@ function SignInContent() {
 
   const handleSignIn = async () => {
     setIsLoading(true);
-    await signIn("google", { callbackUrl });
+    await signIn("google");
   };
 
   return (
