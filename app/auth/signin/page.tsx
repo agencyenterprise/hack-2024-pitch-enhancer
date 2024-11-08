@@ -5,7 +5,7 @@ import { Suspense, useState } from "react";
 
 // Create a separate component for the sign-in content
 function SignInContent() {
-  const callbackUrl = "/pitching";
+  const callbackUrl = `${process.env.NEXT_PUBLIC_URL}/pitching` || "/pitching";
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignIn = async () => {
