@@ -18,6 +18,7 @@ import { countWords } from "./utils/countWords";
 import WordCountArea from "./components/WordCountArea";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import ProcessingSpinner from "./components/ProcessingSpinner";
 
 enum View {
   Transcription = "transcription",
@@ -265,7 +266,7 @@ const Home: React.FC = () => {
               <div className="flex-1">
                 {isProcessingTips ? (
                   <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-300"></div>
+                    <ProcessingSpinner />
                   </div>
                 ) : (
                   <PresentationTipsArea tips={presentationTips || ""} />
