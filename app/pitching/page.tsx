@@ -68,12 +68,6 @@ const Home: React.FC = () => {
     getPresentationTips(transcription);
   }, [transcription]);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/signin");
-    }
-  }, [status, router]);
-
   // Show loading state while checking authentication
   if (status === "loading") {
     return (
