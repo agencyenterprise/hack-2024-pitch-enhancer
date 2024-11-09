@@ -84,9 +84,6 @@ const Home: React.FC = () => {
   }
 
   // Only render the main content if authenticated
-  if (!session) {
-    return null;
-  }
   const requestMicrophonePermission = async (): Promise<boolean> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
