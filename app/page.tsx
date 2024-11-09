@@ -113,7 +113,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* Add Pricing Section after the hero section */}
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
+      <div className="flex flex-col items-center justify-center px-4 py-24 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ const Home: React.FC = () => {
             Choose Your <span className="text-red-300">Perfect Plan</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 max-w-5xl mx-auto">
             {/* Free Plan */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}

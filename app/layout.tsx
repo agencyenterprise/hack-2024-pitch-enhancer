@@ -41,8 +41,17 @@ export default function RootLayout({
         <AuthProvider>
           <Header />
           <main className="min-h-full">{children}</main>
+          <Footer />
         </AuthProvider>
       </body>
     </html>
   );
 }
+
+const Footer = () => {
+  return (
+    <div className="flex flex-grow items-center justify-center mb-8">
+      made with ❤️ by AE Studio
+    </div>
+  );
+};
