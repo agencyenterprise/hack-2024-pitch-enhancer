@@ -58,3 +58,41 @@ export async function generatePresentationTips(transcription: string) {
 
   throw new Error("Failed to generate presentation tips");
 }
+
+export async function generateOptimizedScript(
+  tips: string,
+  originalTranscription: string
+) {
+  const prompt = `Here is an original presentation script: "${originalTranscription}"
+    
+    And here are the improvement tips: "${tips}"
+    
+    Please rewrite the presentation as an optimized 3-minute pitch script, incorporating the improvement suggestions.
+    Focus on clarity, conciseness, and maintaining a natural speaking flow.
+    The script should be structured with clear introduction, key points, and conclusion.
+    
+    Format the response as plain text, optimized for speaking in 3 minutes (approximately 450 words).
+  `;
+
+  let retries = 0;
+  while (retries < 3) {
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4", // Using GPT-4 for better script generation
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      const content = completion.choices[0].message.content;
+      if (!content) {
+        throw new Error("No content received from OpenAI");
+      }
+
+      return content;
+    } catch (error) {
+      console.error(error);
+      retries += 1;
+    }
+  }
+
+  throw new Error("Failed to generate optimized script");
+}

@@ -21,14 +21,21 @@ import WordCountArea from "../components/WordCountArea";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import ProcessingSpinner from "../components/ProcessingSpinner";
+import OptimizedScriptArea from "../components/OptimizedScriptArea";
 
 enum View {
   Transcription = "transcription",
   Tips = "tips",
   WordCount = "wordCount",
+  OptimizedScript = "optimizedScript",
 }
 
-const views = [View.Transcription, View.Tips, View.WordCount];
+const views = [
+  View.Transcription,
+  View.Tips,
+  View.WordCount,
+  View.OptimizedScript,
+];
 
 const Home: React.FC = () => {
   const { data: session, status } = useSession();
@@ -47,6 +54,8 @@ const Home: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const [isProcessingTips, setIsProcessingTips] = useState<boolean>(false);
+  const [optimizedScript, setOptimizedScript] = useState<string | null>(null);
+  const [isGeneratingScript, setIsGeneratingScript] = useState<boolean>(false);
 
   useEffect(() => {
     if (!audioBlob) return;
@@ -213,6 +222,36 @@ const Home: React.FC = () => {
     setCurrentView(views[previousIndex]);
   };
 
+  const generateOptimizedScript = async () => {
+    if (!transcription || !presentationTips) return;
+    setIsGeneratingScript(true);
+
+    const formData = new FormData();
+    formData.append("type", "optimize");
+    formData.append("transcription", transcription);
+    formData.append("tips", presentationTips);
+
+    try {
+      const response = await fetch("/api/openai", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setOptimizedScript(data.optimizedScript);
+      setCurrentView(View.OptimizedScript);
+    } catch (error) {
+      console.error("Error generating optimized script:", error);
+      alert("There was an error generating the optimized script.");
+    } finally {
+      setIsGeneratingScript(false);
+    }
+  };
+
   return (
     <div className="relative ">
       <Image
@@ -335,11 +374,32 @@ const Home: React.FC = () => {
                       <ProcessingSpinner />
                     </div>
                   ) : (
-                    <PresentationTipsArea tips={presentationTips || ""} />
+                    <div className="space-y-4">
+                      <PresentationTipsArea tips={presentationTips || ""} />
+                      <button
+                        onClick={generateOptimizedScript}
+                        disabled={isGeneratingScript}
+                        className="w-full px-6 py-3 bg-red-400/80 rounded-lg text-white hover:bg-red-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isGeneratingScript ? (
+                          <>
+                            <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white" />
+                            <span>Generating Script...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Generate 3-Minute Optimized Script</span>
+                            <ChevronRightIcon className="h-5 w-5" />
+                          </>
+                        )}
+                      </button>
+                    </div>
                   )}
                 </div>
-              ) : (
+              ) : currentView === View.WordCount ? (
                 <WordCountArea wordCount={wordCount || []} />
+              ) : (
+                <OptimizedScriptArea script={optimizedScript || ""} />
               )}
 
               <button

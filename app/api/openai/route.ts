@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { transcribeAudio, generatePresentationTips } from "../../lib/openai";
+import {
+  transcribeAudio,
+  generatePresentationTips,
+  generateOptimizedScript,
+} from "../../lib/openai";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +19,15 @@ export async function POST(request: NextRequest) {
         const transcription = formData.get("transcription") as string;
         const tipsData = await generatePresentationTips(transcription);
         return NextResponse.json(tipsData);
+
+      case "optimize":
+        const originalScript = formData.get("transcription") as string;
+        const tips = formData.get("tips") as string;
+        const optimizedScript = await generateOptimizedScript(
+          tips,
+          originalScript
+        );
+        return NextResponse.json({ optimizedScript });
 
       default:
         return NextResponse.json(
