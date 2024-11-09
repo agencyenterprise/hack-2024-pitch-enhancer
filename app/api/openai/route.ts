@@ -3,6 +3,7 @@ import {
   transcribeAudio,
   generatePresentationTips,
   generateOptimizedScript,
+  generatePitchScore,
 } from "../../lib/openai";
 
 export async function POST(request: NextRequest) {
@@ -28,6 +29,11 @@ export async function POST(request: NextRequest) {
           originalScript
         );
         return NextResponse.json({ optimizedScript });
+
+      case "score":
+        const scoreTranscription = formData.get("transcription") as string;
+        const scoreData = await generatePitchScore(scoreTranscription);
+        return NextResponse.json({ scores: scoreData });
 
       default:
         return NextResponse.json(

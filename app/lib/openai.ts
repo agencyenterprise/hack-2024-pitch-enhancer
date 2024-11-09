@@ -96,3 +96,40 @@ export async function generateOptimizedScript(
 
   throw new Error("Failed to generate optimized script");
 }
+
+export async function generatePitchScore(transcription: string) {
+  const prompt = `Analyze the following presentation transcript and provide scores (0-100) for:
+    - Overall Impact
+    - Humor Appropriateness
+    - Professionalism
+    - Clarity
+    - Audience Engagement
+    - Lasting Impact
+
+    Transcript: "${transcription}"
+
+    Provide the scores in a JSON format with these exact keys: overall, humor, professionalism, clarity, engagement, impact.
+  `;
+
+  let retries = 0;
+  while (retries < 3) {
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      const content = completion.choices[0].message.content;
+      if (!content) {
+        throw new Error("No content received from OpenAI");
+      }
+
+      return JSON.parse(content);
+    } catch (error) {
+      console.error(error);
+      retries += 1;
+    }
+  }
+
+  throw new Error("Failed to generate pitch score");
+}

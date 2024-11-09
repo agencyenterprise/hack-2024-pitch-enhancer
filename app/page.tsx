@@ -111,6 +111,143 @@ const Home: React.FC = () => {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Add Pricing Section after the hero section */}
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center space-y-8 max-w-6xl w-full"
+        >
+          <h2 className="text-4xl font-bold text-white mb-12">
+            Choose Your <span className="text-red-300">Perfect Plan</span>
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
+            {/* Free Plan */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="p-8 bg-gray-500/10 backdrop-blur-sm rounded-2xl border border-gray-200/10 hover:border-red-300/30 transition-all"
+            >
+              <h3 className="text-2xl font-bold text-white mb-2">Free Plan</h3>
+              <p className="text-red-300 text-4xl font-bold mb-6">$0</p>
+              <div className="space-y-4 text-left mb-8">
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  General pitch review
+                </div>
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  3-minute optimized pitch
+                </div>
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  Basic feedback on delivery
+                </div>
+              </div>
+              <Link
+                href="/pitching"
+                className="inline-block px-8 py-3 bg-gray-500/30 rounded-full text-white hover:bg-gray-500/50 transition-all text-lg font-semibold"
+              >
+                Start Free
+              </Link>
+            </motion.div>
+
+            {/* Pro Plan */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="p-8 bg-gradient-to-br from-red-400/20 to-gray-500/10 backdrop-blur-sm rounded-2xl border border-red-300/30 hover:border-red-300/50 transition-all"
+            >
+              <div className="inline-block px-4 py-1 bg-red-300/20 rounded-full text-red-300 text-sm mb-4">
+                MOST POPULAR
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Pro Plan</h3>
+              <p className="text-red-300 text-4xl font-bold mb-6">$69.99</p>
+              <div className="space-y-4 text-left mb-8">
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  Everything in Free plan
+                </div>
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  In-depth tone analysis
+                </div>
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  Video analysis feedback
+                </div>
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  Customizable style targets
+                </div>
+                <div className="flex items-center text-gray-300">
+                  <svg
+                    className="w-5 h-5 text-red-300 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                  </svg>
+                  Priority AI processing
+                </div>
+              </div>
+              <Link
+                href="/pitching"
+                className="inline-block px-8 py-3 bg-red-400/80 rounded-full text-white hover:bg-red-600 transition-all text-lg font-semibold hover:scale-105"
+              >
+                Get Pro Access
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };
